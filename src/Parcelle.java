@@ -1,20 +1,18 @@
 import java.util.Random;
 
-
 public class Parcelle {
-	int elem = 0;
-	String[]gifs=new String[]{"O"," ","R","N","J"};
-	String e;
+	boolean estTraversable; //si cette case est accessible
+	int elem = 1; // 1=sable
 	
 	public Parcelle(){
 		Random r = new Random();
-		int nb=r.nextInt(10);
+		int nb = r.nextInt(10);
 		if(nb==0){
 			elem=2;
 		}else{
 			elem=1;
 		}
-		e=gifs[this.elem];
+		//e=gifs[this.elem];
 	}
 	public Parcelle(int i){
 		Random r = new Random();
@@ -24,6 +22,6 @@ public class Parcelle {
 		}else{
 			elem=1;
 		}
-		e=gifs[this.elem];
+		//e=gifs[this.elem];
 	}
 }

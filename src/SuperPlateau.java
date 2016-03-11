@@ -1,10 +1,9 @@
 import java.util.Random;
 
-
 public class SuperPlateau {
 	Plateau jeu;
 	
-	public SuperPlateau(String[]gifs,int i){
+	public SuperPlateau(String[] gifs,int i){
 		jeu=new Plateau(gifs,i);
 	}
 	
@@ -39,12 +38,12 @@ public class SuperPlateau {
 		
 	public static void main(String[]args){
 		Random r=new Random();
-		String[] gifs={"/home/infoetu/lassallr/ap/image/un.gif","/home/infoetu/lassallr/ap/image/deux.gif","/home/infoetu/lassallr/ap/image/trois.gif","/home/infoetu/lassallr/ap/image/quatre.gif"};
+		String[] gifs={"images/un.gif","/images/deux.gif","images/trois.gif","images/quatre.gif"};
 		int taille=10;
 		SuperPlateau grille=new SuperPlateau(gifs,taille);
 		int[][] jeu=new int[taille][taille];
 		
-		// Remplissage aléatoire du tableau
+		// Remplissage aleatoire du tableau
 		for (int i=0;i<taille;i++){
 			for (int j=0;j<taille;j++){
 				jeu[i][j]=r.nextInt(gifs.length+1);
