@@ -7,8 +7,9 @@ public class Ile {
 	int taille = 20;
 	String[] imgs = { "images/sand.png", "images/water.png", "images/ship.png", "images/rocher.png" };
 
-	Ile() {
+	public Ile() {
 		positions = new int[taille][taille];
+		// on place le sable et l'eau
 		for (int i = 0; i < taille; i++) {
 			for (int j = 0; j < taille; j++) {
 				if (i == 0 || i == taille - 1 || j == 0 || j == taille - 1) {
@@ -18,26 +19,24 @@ public class Ile {
 				}
 			}
 		}
+		// on place les navires
 		positions[1][1] = 3;
 		positions[taille - 2][taille - 2] = 3;
 
-		ile = new Parcelle[taille][taille];
-		
 		Random r = new Random();
-		int x,y;
-		int nbreSable = (taille-2)*(taille-2)-2;
-		int nbreRocher = (int)(nbreSable*0.10);
-		while (nbreRocher != 0){
-			x = (int)(r.nextInt(taille-2))+1;
-			y = (int)(r.nextInt(taille-2))+1;
-			if((x != 1 && y != 1) || (x != taille-2 && y != taille-2) || positions[x][y] != 4){
-				positions[x][y] = 4; //on place un rocher
+		int x, y;
+		int nbreSable = (taille - 2) * (taille - 2) - 2;
+		int nbreRocher = (int) (nbreSable * 0.10);
+		while (nbreRocher != 0) {
+			x = (int) (r.nextInt(taille - 2)) + 1;
+			y = (int) (r.nextInt(taille - 2)) + 1;
+			if ((x != 1 && y != 1) && (x != taille - 2 && y != taille - 2) && positions[x][y] != 4) {
+				positions[x][y] = 4; // on place un rocher
 				nbreRocher--;
 			}
 		}
-		
-		
-		
+
+		ile = new Parcelle[taille][taille];
 		for (int i = 0; i < taille; i++) {
 			for (int j = 0; j < taille; j++) {
 				ile[i][j] = new Parcelle();
