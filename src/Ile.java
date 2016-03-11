@@ -26,11 +26,11 @@ public class Ile {
 		Random r = new Random();
 		int x, y;
 		int nbreSable = (taille - 2) * (taille - 2) - 2;
-		int nbreRocher = (int) (nbreSable * 0.10);
+		int nbreRocher = (int) (nbreSable * 0.1);
 		while (nbreRocher != 0) {
 			x = (int) (r.nextInt(taille - 2)) + 1;
 			y = (int) (r.nextInt(taille - 2)) + 1;
-			if ((x != 1 && y != 1) && (x != taille - 2 && y != taille - 2) && positions[x][y] != 4) {
+			if (!((x == 1 && y == 1) || (x == taille - 2 && y == taille - 2) || positions[x][y] == 4)) {
 				positions[x][y] = 4; // on place un rocher
 				nbreRocher--;
 			}
