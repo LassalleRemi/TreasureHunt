@@ -10,7 +10,7 @@ public class Ile {
 	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png",
 			"images/ship2.png" };
 
-	public Ile(int taille) {
+	public Ile(int taille, int pourcentRocher) {
 		this.taille = taille;
 		positions = new int[taille][taille];
 		ile = new Parcelle[taille][taille];
@@ -18,7 +18,7 @@ public class Ile {
 		Random r = new Random();
 		int x, y;
 		int nbreSable = (taille - 2) * (taille - 2) - 2;
-		int nbreRocher = (int) (nbreSable * 0.2);
+		int nbreRocher = (int) (nbreSable * pourcentRocher / 100);
 		int yNavire1, yNavire2;
 		this.nbreRocher = nbreRocher; // on enregistre le nbre de rochers
 		do {
@@ -52,6 +52,24 @@ public class Ile {
 			}
 			nbreRocher = this.nbreRocher;
 		} while (!rochersAccessible(1, yNavire1) || !rochersAccessible(taille - 2, yNavire2));
+
+		// mise en place de la cle et du coffre
+		int numCle = r.nextInt(nbreRocher);
+		int numCoffre;
+		do {
+			numCoffre = r.nextInt(nbreRocher);
+		} while (numCoffre == numCle);
+		int num = 0;
+		for (int i = 0; i < taille; i++)
+			for (int j = 0; j < taille; j++)
+				if (ile[i][j] instanceof Rocher) {
+					if (num == numCle) {
+						((Rocher) ile[i][j]).cle = true;
+					} else if (num == numCoffre) {
+						((Rocher) ile[i][j]).coffre = true;
+					}
+					num++;
+				}
 	}
 
 	private boolean rochersAccessible(int xN, int yN) {
