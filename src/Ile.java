@@ -6,9 +6,9 @@ public class Ile {
 	Parcelle[][] ile;
 	int[][] positions; // stock les int pour l'affichage
 	int taille;
-	int nbreRocher;
+	int saveRocher;
 	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png",
-			"images/ship2.png" };
+			"images/ship2.png", "images/chest.png", "images/key.png" };
 
 	public Ile(int taille, int pourcentRocher) {
 		this.taille = taille;
@@ -20,7 +20,7 @@ public class Ile {
 		int nbreSable = (taille - 2) * (taille - 2) - 2;
 		int nbreRocher = (int) (nbreSable * pourcentRocher / 100);
 		int yNavire1, yNavire2;
-		this.nbreRocher = nbreRocher; // on enregistre le nbre de rochers
+		this.saveRocher = nbreRocher; // on enregistre le nbre de rochers
 		do {
 			// on place le sable et l'eau
 			for (int i = 0; i < taille; i++)
@@ -47,31 +47,28 @@ public class Ile {
 						&& !(x == taille - 2 && y == yNavire2 + 1) && !(x == taille - 2 && y == yNavire2 - 1)) {
 					positions[x][y] = 3; // on place un rocher
 					ile[x][y] = new Rocher(); // on cree l objet rocher
+					if (this.saveRocher == nbreRocher) {
+						((Rocher) ile[x][y]).cle = true;
+						positions[x][y] = 7; // on place une cle
+						System.out.println(x + " " + y);
+					} else if (this.saveRocher - 1 == nbreRocher) {
+						((Rocher) ile[x][y]).coffre = true;
+						positions[x][y] = 6; // on place une cle
+						System.out.println(x + " " + y);
+					}
 					nbreRocher--;
 				}
-			}
-			nbreRocher = this.nbreRocher;
-		} while (!rochersAccessible(1, yNavire1) || !rochersAccessible(taille - 2, yNavire2));
 
-		// mise en place de la cle et du coffre
-		int numCle = r.nextInt(nbreRocher);
-		int numCoffre;
-		do {
-			numCoffre = r.nextInt(nbreRocher);
-		} while (numCoffre == numCle);
-		int num = 0;
-		for (int i = 0; i < taille; i++)
-			for (int j = 0; j < taille; j++)
-				if (ile[i][j] instanceof Rocher) {
-					if (num == numCle) {
-						((Rocher) ile[i][j]).cle = true;
-					} else if (num == numCoffre) {
-						((Rocher) ile[i][j]).coffre = true;
-					}
-					num++;
-				}
+			}
+			nbreRocher = this.saveRocher;
+		} while (!rochersAccessible(1, yNavire1) || !rochersAccessible(taille - 2, yNavire2));
 	}
 
+	/**
+	 * @param xN
+	 * @param yN
+	 * @return
+	 */
 	private boolean rochersAccessible(int xN, int yN) {
 		// creation du tableau de test full 0 et un seul 1
 		int[][] mondetempo = new int[taille][taille];
