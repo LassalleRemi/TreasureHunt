@@ -8,8 +8,17 @@ public class Ile {
 	int taille;
 	int saveRocher;
 	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png",
-			"images/ship2.png", "images/chest.png", "images/key.png" };
+			"images/ship2.png" };
 
+	/**
+	 * Constructeur de l'ile, de dimension taille x taille, avec un pourcentage
+	 * de rochers.
+	 * 
+	 * @param taille
+	 *            Dimension de la fenêtre.
+	 * @param pourcentRocher
+	 *            Pourcentage de rochers à générer.
+	 */
 	public Ile(int taille, int pourcentRocher) {
 		this.taille = taille;
 		positions = new int[taille][taille];
@@ -49,12 +58,12 @@ public class Ile {
 					ile[x][y] = new Rocher(); // on cree l objet rocher
 					if (this.saveRocher == nbreRocher) {
 						((Rocher) ile[x][y]).cle = true;
-						positions[x][y] = 7; // on place une cle
-						System.out.println(x + " " + y);
+						positions[x][y] = 3;
+						System.out.println("Cle : " + x + " " + y);
 					} else if (this.saveRocher - 1 == nbreRocher) {
 						((Rocher) ile[x][y]).coffre = true;
-						positions[x][y] = 6; // on place une cle
-						System.out.println(x + " " + y);
+						positions[x][y] = 3;
+						System.out.println("Coffre : " + x + " " + y);
 					}
 					nbreRocher--;
 				}
@@ -65,9 +74,17 @@ public class Ile {
 	}
 
 	/**
+	 * Méthode permettant de vérifier l'accessibilité des rochers à partir d'un
+	 * point donné.
+	 * 
 	 * @param xN
+	 *            L'abscisse à partir duquel tous les rochers vont être
+	 *            vérifiés.
 	 * @param yN
-	 * @return
+	 *            L'ordonnée à partir de laquelle tous les rochers vont être
+	 *            vérifiés.
+	 * @return Un boolean qui retourne true si tous les rochers sont accessibles
+	 *         à partir du xN et yN.
 	 */
 	private boolean rochersAccessible(int xN, int yN) {
 		// creation du tableau de test full 0 et un seul 1
@@ -120,6 +137,13 @@ public class Ile {
 			return false;
 	}
 
+	/**
+	 * Méthode retournant le nombre de zéros dans le tableau donné.
+	 * 
+	 * @param monde
+	 *            Tableau de int à 2 dimensions.
+	 * @return Le nombre de zéros trouvé.
+	 */
 	private int nbreZero(int[][] monde) {
 		int nbre = 0;
 		for (int[] m : monde)
@@ -129,6 +153,9 @@ public class Ile {
 		return nbre;
 	}
 
+	/**
+	 * Méthode qui affiche dans une fenetre le jeu.
+	 */
 	public void afficher() {
 		plateau = new SuperPlateau(imgs, taille);
 		plateau.setJeu(positions);
