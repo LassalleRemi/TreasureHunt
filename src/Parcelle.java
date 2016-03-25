@@ -1,7 +1,8 @@
 
 public class Parcelle {
 	boolean estTraversable = true; // si cette case est accessible
-
+	boolean cle = false;
+	boolean coffre = false;
 	/**
 	 * Constructeur par défaut de la classe Parcelle.
 	 */

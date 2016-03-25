@@ -7,8 +7,8 @@ public class Ile {
 	int[][] positions; // stock les int pour l'affichage
 	int taille;
 	int saveRocher;
-	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png",
-			"images/ship2.png" };
+	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png", "images/ship2.png",
+			"images/surbrillance.png", "images/surbrillanceRocher.png", "images/explorateur.png" };
 
 	/**
 	 * Constructeur de l'ile, de dimension taille x taille, avec un pourcentage
@@ -20,16 +20,11 @@ public class Ile {
 	 *            Pourcentage de rochers à générer.
 	 */
 	public Ile(int taille, int pourcentRocher) {
+		Random r = new Random();
 		this.taille = taille;
 		positions = new int[taille][taille];
 		ile = new Parcelle[taille][taille];
-
-		Random r = new Random();
-		int x, y;
-		int nbreSable = (taille - 2) * (taille - 2) - 2;
-		int nbreRocher = (int) (nbreSable * pourcentRocher / 100);
 		int yNavire1, yNavire2;
-		this.saveRocher = nbreRocher; // on enregistre le nbre de rochers
 		do {
 			// on place le sable et l'eau
 			for (int i = 0; i < taille; i++)
@@ -44,33 +39,45 @@ public class Ile {
 			// on place les navires
 			yNavire1 = (r.nextInt(taille - 2) + 1);
 			yNavire2 = (r.nextInt(taille - 2) + 1);
-			positions[1][yNavire1] = 4;
-			ile[1][yNavire1] = new Parcelle(false);
-			positions[taille - 2][yNavire2] = 5;
-			ile[taille - 2][yNavire2] = new Parcelle(false);
-			while (nbreRocher != 0) {
-				x = (int) (r.nextInt(taille - 2)) + 1;
-				y = (int) (r.nextInt(taille - 2)) + 1;
-				if (positions[x][y] == 1 && !(x == 2 && y == yNavire1) && !(x == 1 && y == yNavire1 + 1)
-						&& !(x == 1 && y == yNavire1 - 1) && !(x == taille - 3 && y == yNavire2)
-						&& !(x == taille - 2 && y == yNavire2 + 1) && !(x == taille - 2 && y == yNavire2 - 1)) {
-					positions[x][y] = 3; // on place un rocher
-					ile[x][y] = new Rocher(); // on cree l objet rocher
-					if (this.saveRocher == nbreRocher) {
-						((Rocher) ile[x][y]).cle = true;
-						positions[x][y] = 3;
-						System.out.println("Cle : " + x + " " + y);
-					} else if (this.saveRocher - 1 == nbreRocher) {
-						((Rocher) ile[x][y]).coffre = true;
-						positions[x][y] = 3;
-						System.out.println("Coffre : " + x + " " + y);
-					}
-					nbreRocher--;
-				}
-
-			}
-			nbreRocher = this.saveRocher;
+			placeNavires(yNavire1, yNavire2);
+			placeRochers(pourcentRocher, yNavire1, yNavire2);
 		} while (!rochersAccessible(1, yNavire1) || !rochersAccessible(taille - 2, yNavire2));
+	}
+
+	void placeNavires(int yNavire1, int yNavire2){
+		positions[1][yNavire1] = 4;
+		ile[1][yNavire1] = new Navire(1, yNavire1);
+		positions[taille - 2][yNavire2] = 5;
+		ile[taille - 2][yNavire2] = new Navire(taille - 2, yNavire2);
+	}
+	void placeRochers(int pourcentRocher, int yNavire1, int yNavire2) {
+		Random r = new Random();
+		int x, y;
+		int nbreSable = (taille - 2) * (taille - 2) - 2;
+		int nbreRocher = (int) (nbreSable * pourcentRocher / 100);
+		this.saveRocher = nbreRocher; // on enregistre le nbre de rochers
+		while (nbreRocher != 0) {
+			x = (int) (r.nextInt(taille - 2)) + 1;
+			y = (int) (r.nextInt(taille - 2)) + 1;
+			if (positions[x][y] == 1 && !(x == 2 && y == yNavire1) && !(x == 1 && y == yNavire1 + 1)
+					&& !(x == 1 && y == yNavire1 - 1) && !(x == taille - 3 && y == yNavire2)
+					&& !(x == taille - 2 && y == yNavire2 + 1) && !(x == taille - 2 && y == yNavire2 - 1)) {
+				positions[x][y] = 3; // on place un rocher
+				ile[x][y] = new Rocher(); // on cree l objet rocher
+				if (this.saveRocher == nbreRocher) {
+					ile[x][y].cle = true;
+					positions[x][y] = 3;
+					System.out.println("Cle : " + x + " " + y);
+				} else if (this.saveRocher - 1 == nbreRocher) {
+					ile[x][y].coffre = true;
+					positions[x][y] = 3;
+					System.out.println("Coffre : " + x + " " + y);
+				}
+				nbreRocher--;
+			}
+
+		}
+		nbreRocher = this.saveRocher;
 	}
 
 	/**
@@ -160,6 +167,37 @@ public class Ile {
 		plateau = new SuperPlateau(imgs, taille);
 		plateau.setJeu(positions);
 		plateau.affichage();
+	}
+
+	void surbrillance(int x, int y, int type) {
+		if (type == 1) {
+			if (positions[x][y + 1] == 0) {
+				positions[x][y + 1] = 5;
+			} else if (positions[x][y - 1] == 0) {
+				positions[x][y - 1] = 5;
+			} else if (positions[x - 1][y] == 0) {
+				positions[x - 1][y] = 5;
+			} else if (positions[x + 1][y] == 0) {
+				positions[x + 1][y] = 5;
+			} else if (positions[x][y + 1] == 2) {
+				positions[x][y + 1] = 6;
+			} else if (positions[x][y - 1] == 2) {
+				positions[x][y - 1] = 6;
+			} else if (positions[x - 1][y] == 2) {
+				positions[x - 1][y] = 6;
+			} else if (positions[x + 1][y] == 2) {
+				positions[x + 1][y] = 6;
+			}
+		}
+	}
+	
+	int[] getCoord(int n){
+		int[] coords = null;
+		for(int x=0; x<taille; x++)
+			for(int y=0; y<taille; y++)
+				if(positions[x][y] == n)
+					coords = new int[]{x, y};
+		return coords;
 	}
 
 }
