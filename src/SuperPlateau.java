@@ -1,3 +1,8 @@
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+
+import tps.*;
 
 public class SuperPlateau {
 	Plateau jeu;
@@ -18,21 +23,16 @@ public class SuperPlateau {
 		return jeu.getJeu();
 	}
 
-	public void paintComponent(java.awt.Graphics g) {
-		jeu.paintComponent(g);
+	int getX(MouseEvent event) {
+		return jeu.getX(event);
 	}
-
-	public boolean deplacer(int x, int y, int a, int b) {
-		if (this.getJeu()[a][b] == 0) {
-			int[][] j = this.getJeu();
-			j[a][b] = j[x][y];
-			j[x][y] = 0;
-			this.setJeu(j);
-			this.affichage();
-			return true;
-		} else {
-			return false;
-		}
+	
+	int getY(MouseEvent event) {
+		return jeu.getY(event);
+	}
+	
+	public InputEvent waitEvent(int timeout){
+		return jeu.waitEvent(timeout);
 	}
 
 }

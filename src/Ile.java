@@ -3,12 +3,13 @@ import java.util.Random;
 
 public class Ile {
 	SuperPlateau plateau;
-	Parcelle[][] ile;
+	private Parcelle[][] ile;
 	int[][] positions; // stock les int pour l'affichage
 	int taille;
 	int saveRocher;
 	String[] imgs = { "images/sand.png", "images/water.png", "images/rocher.png", "images/ship.png", "images/ship2.png",
-			"images/surbrillance.png", "images/surbrillanceRocher.png", "images/explorateur.png" };
+			"images/surbrillance_sand.png", "images/surbrillance_rocher.png", "images/explorateur.png",
+			"images/voleur.png", "images/surbrillance_navire1.png", "images/surbrillance_navire2.png", "images/chest.png", "images/chest_open.png" };
 
 	/**
 	 * Constructeur de l'ile, de dimension taille x taille, avec un pourcentage
@@ -20,6 +21,7 @@ public class Ile {
 	 *            Pourcentage de rochers à générer.
 	 */
 	public Ile(int taille, int pourcentRocher) {
+		plateau = new SuperPlateau(imgs, taille);
 		Random r = new Random();
 		this.taille = taille;
 		positions = new int[taille][taille];
@@ -44,12 +46,13 @@ public class Ile {
 		} while (!rochersAccessible(1, yNavire1) || !rochersAccessible(taille - 2, yNavire2));
 	}
 
-	void placeNavires(int yNavire1, int yNavire2){
+	void placeNavires(int yNavire1, int yNavire2) {
 		positions[1][yNavire1] = 4;
 		ile[1][yNavire1] = new Navire(1, yNavire1);
 		positions[taille - 2][yNavire2] = 5;
 		ile[taille - 2][yNavire2] = new Navire(taille - 2, yNavire2);
 	}
+
 	void placeRochers(int pourcentRocher, int yNavire1, int yNavire2) {
 		Random r = new Random();
 		int x, y;
@@ -63,16 +66,14 @@ public class Ile {
 					&& !(x == 1 && y == yNavire1 - 1) && !(x == taille - 3 && y == yNavire2)
 					&& !(x == taille - 2 && y == yNavire2 + 1) && !(x == taille - 2 && y == yNavire2 - 1)) {
 				positions[x][y] = 3; // on place un rocher
-				ile[x][y] = new Rocher(); // on cree l objet rocher
 				if (this.saveRocher == nbreRocher) {
-					ile[x][y].cle = true;
-					positions[x][y] = 3;
+					ile[x][y] = new Rocher(true, false, false);
 					System.out.println("Cle : " + x + " " + y);
 				} else if (this.saveRocher - 1 == nbreRocher) {
-					ile[x][y].coffre = true;
-					positions[x][y] = 3;
+					ile[x][y] = new Rocher(false, true, true);
 					System.out.println("Coffre : " + x + " " + y);
-				}
+				} else
+					ile[x][y] = new Rocher(); // on cree l objet rocher
 				nbreRocher--;
 			}
 
@@ -164,40 +165,57 @@ public class Ile {
 	 * Méthode qui affiche dans une fenetre le jeu.
 	 */
 	public void afficher() {
-		plateau = new SuperPlateau(imgs, taille);
 		plateau.setJeu(positions);
 		plateau.affichage();
 	}
-
+/*
 	void surbrillance(int x, int y, int type) {
+		
 		if (type == 1) {
-			if (positions[x][y + 1] == 0) {
-				positions[x][y + 1] = 5;
-			} else if (positions[x][y - 1] == 0) {
-				positions[x][y - 1] = 5;
-			} else if (positions[x - 1][y] == 0) {
-				positions[x - 1][y] = 5;
-			} else if (positions[x + 1][y] == 0) {
-				positions[x + 1][y] = 5;
-			} else if (positions[x][y + 1] == 2) {
+			if (positions[x][y + 1] == 1) {
 				positions[x][y + 1] = 6;
-			} else if (positions[x][y - 1] == 2) {
+			} else if (positions[x][y - 1] == 1) {
 				positions[x][y - 1] = 6;
-			} else if (positions[x - 1][y] == 2) {
+			} else if (positions[x - 1][y] == 1) {
 				positions[x - 1][y] = 6;
-			} else if (positions[x + 1][y] == 2) {
+			} else if (positions[x + 1][y] == 1) {
 				positions[x + 1][y] = 6;
+			} else if (positions[x][y + 1] == 3) {
+				positions[x][y + 1] = 7;
+			} else if (positions[x][y - 1] == 3) {
+				positions[x][y - 1] = 7;
+			} else if (positions[x - 1][y] == 3) {
+				positions[x - 1][y] = 7;
+			} else if (positions[x + 1][y] == 3) {
+				positions[x + 1][y] = 7;
 			}
 		}
+		affichage(positions_surbrillance)
 	}
-	
-	int[] getCoord(int n){
+*/
+	int[] getNavire(int navire) {
+		// 4 et 5 sont des navires
 		int[] coords = null;
-		for(int x=0; x<taille; x++)
-			for(int y=0; y<taille; y++)
-				if(positions[x][y] == n)
-					coords = new int[]{x, y};
+		for (int x = 0; x < taille; x++)
+			for (int y = 0; y < taille; y++)
+				if (positions[x][y] == navire)
+					coords = new int[] { x, y };
 		return coords;
+	}
+
+	/**
+	 * Retourne l'objet aux coordonnees passees en parametre
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	Parcelle getObjet(int x, int y) {
+		return ile[x][y];
+	}
+
+	void setObjet(int x, int y, Parcelle obj) {
+		ile[x][y] = obj;
 	}
 
 }
