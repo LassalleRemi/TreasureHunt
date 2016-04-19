@@ -1,5 +1,8 @@
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JFrame;
+
 import java.awt.event.KeyEvent;
 
 import tps.*;
