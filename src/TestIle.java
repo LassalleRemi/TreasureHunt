@@ -1,71 +1,88 @@
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 public class TestIle {
 
 	public static void main(String[] args) {
-		Equipe team = new Equipe("Skittles");
-		Equipe team2 = new Equipe("Guinguette");
 
-		Ile ile = new Ile(15, 20, team, team2);
-
-		Personnage vol = new Voleur(team);
-		Personnage exp = new Explorateur(team);
-		team.addPerso(vol);
-		team.addPerso(exp);
-		ile.n1.addPerso(vol);
-		ile.n1.addPerso(exp);
-		System.out.println(ile.n1);
-
-		Personnage vol2 = new Voleur(team2);
-		Personnage exp2 = new Explorateur(team2);
-		team2.addPerso(vol2);
-		team2.addPerso(exp2);
-		ile.n2.addPerso(vol2);
-		ile.n2.addPerso(exp2);
-
-		ile.afficher();
-		InputEvent event;
-
-		int x = 0, y = 0;
-		while (true) { // le jeu n'est pas finit
-			for (Personnage p : team.getEquipe()) {
-				if (ile.n1.estPresent(p)) {
-					ile.n1.sortirPerso(p, ile);
-					System.out.println(ile.n1);
-
-				} else {
-					System.out.println(p);
-					event = ile.plateau.waitEvent(10000);
-					if (event instanceof MouseEvent) {
-						x = ile.plateau.getX((MouseEvent) event);
-						y = ile.plateau.getY((MouseEvent) event);
-						System.out.println("ligne " + x + " colonne : " + y);
-					}
-					p.deplacer(p.x, p.y, y, x, ile);
-				}
-				ile.afficher();
+		// JFrame constitution = new JFrame("Constituer equipe"); // demande
+		// constitution equipe
+		// constitution.setVisible(true);
+		final int TAILLE = 8;
+		String[] n = new String[] { "premier", "deuxième", "troisième" };
+		Equipe[] e = new Equipe[2];
+		e[0] = new Equipe(JOptionPane.showInputDialog("Le nom de la première équipe:", "Skittles"));
+		e[1] = new Equipe(JOptionPane.showInputDialog("Le nom de la seconde équipe:", "Smarties"));
+		Ile ile = new Ile(TAILLE, 10, e[0], e[1]);
+		for (int j = 0; j < 2; j++) {
+			for (int i = 0; i < 3; i++) {
+				String perso = (String) JOptionPane.showInputDialog(null,
+						"Equipe " + e[j] + ", choisissez votre " + n[i] + " personnage: ", "Choix du personnage",
+						JOptionPane.QUESTION_MESSAGE, null, new String[] { "Explorateur", "Voleur" }, "Voleur");
+				System.out.println(perso);
+				if (perso.equals("Explorateur"))
+					new Explorateur(e[j]);
+				else if (perso.equals("Voleur"))
+					new Voleur(e[j]);
+				else
+					i--;
 			}
-			for (Personnage p2 : team2.getEquipe()) {
-				if (ile.n2.estPresent(p2)) {
-					ile.n2.sortirPerso(p2, ile);
-					System.out.println(ile.n2);
-
-				} else {
-					System.out.println(p2);
-					event = ile.plateau.waitEvent(10000);
-					if (event instanceof MouseEvent) {
-						x = ile.plateau.getX((MouseEvent) event);
-						y = ile.plateau.getY((MouseEvent) event);
-						System.out.println("ligne " + x + " colonne : " + y);
-					}
-					p2.deplacer(p2.x, p2.y, y, x, ile);
-				}
-				ile.afficher();
-			}
-
 		}
 
+		InputEvent event;
+
+		boolean tresorTrouve = false;
+		boolean vivants = true;
+		int x = 0, y = 0;
+		while (vivants && !tresorTrouve) {
+			for (int equipe = 0; equipe < 2; equipe++) {
+				e[equipe].vueCommune(ile);
+				ile.afficher(e[equipe].vue);
+				for (Personnage p : e[equipe].getEquipe()) {
+					if (e[equipe].getNavire().estPresent(p)) {
+						System.out.println(e[equipe].getNavire());
+						Personnage sortir = (Personnage) JOptionPane.showInputDialog(null,
+								"Quel personnage voulez vous faire sortir?", "Choix du personnage",
+								JOptionPane.QUESTION_MESSAGE, null, e[equipe].getNavire().getPersos().toArray(), null);
+						if (sortir != null)
+							e[equipe].getNavire().sortirPerso(sortir, ile);
+					} else {
+						ile.afficher(p.surbrillance(ile));
+						do {
+							event = ile.plateau.waitEvent(10000);
+							if (event instanceof MouseEvent) {
+								x = ile.plateau.getX((MouseEvent) event);
+								y = ile.plateau.getY((MouseEvent) event);
+							} else
+								event = null;
+						} while (event == null);
+						p.action(y, x, ile);
+					}
+					ile.afficher(e[equipe].vue);
+					System.out.println(p);
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+						Thread.currentThread().interrupt();
+					}
+					if (p.estMort()) {
+						System.out.println("Le personnage " + p + " n'a plus d'énergie, par conséquence il est mort");
+						e[equipe].removeVisible(p);
+						ile.removeObjet(p);
+						ile.removePosition(p);
+					}
+				}
+
+				if (e[equipe].sontMorts()) {
+					vivants = false;
+				}
+			}
+		}
+		ile.afficher();
+		System.out.println("C'est fini");
 	}
 
 }

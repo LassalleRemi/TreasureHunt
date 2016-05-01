@@ -1,11 +1,11 @@
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Navire extends Parcelle {
 	Equipe team;
 	private ArrayList<Personnage> persos = new ArrayList<>();
-	int xN;
-	int yN;
+	boolean tresor = false;
 
 	/**
 	 * @param x
@@ -15,60 +15,45 @@ public class Navire extends Parcelle {
 	public Navire(int x, int y, Equipe team) {
 		this.team = team;
 		super.estTraversable = true;
-		xN = x;
-		yN = y;
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
 	 * @param pers
 	 */
 	public void addPerso(Personnage pers) {
+		// f pers a un tresor finit
 		persos.add(pers);
+		pers.energie += 0;
 	}
 
 	/**
-	 * @param pers
+	 * @param perso
 	 * @param ile
 	 */
-	public void sortirPerso(Personnage pers, Ile ile) {
-		Random r = new Random();
-		int choix;
-		boolean stop = true;
+	public void sortirPerso(Personnage perso, Ile ile) {
+		InputEvent event;
+		int x = 0, y = 0;
+		boolean arret = false;
 		do {
-			choix = r.nextInt(4);
-			switch (choix) {
-			case 0:
-				if (ile.getObjet(xN + 1, yN).estTraversable) {
-					pers.placer(xN + 1, yN, pers, ile);
-					stop = true;
-				} else
-					stop = false;
-				break;
-			case 1:
-				if (ile.getObjet(xN - 1, yN).estTraversable) {
-					pers.placer(xN - 1, yN, pers, ile);
-					stop = true;
-				} else
-					stop = false;
-				break;
-			case 2:
-				if (ile.getObjet(xN, yN + 1).estTraversable) {
-					pers.placer(xN, yN + 1, pers, ile);
-					stop = true;
-				} else
-					stop = false;
-				break;
-			case 3:
-				if (ile.getObjet(xN, yN - 1).estTraversable) {
-					pers.placer(xN, yN - 1, pers, ile);
-					stop = true;
-				} else
-					stop = false;
-				break;
+			ile.plateau.println(
+					"Veuillez choisir une case autour du navire pour débarquer ou annuler pour ne pas débarquer");
+			do {
+				event = ile.plateau.waitEvent(10000);
+				if (event instanceof MouseEvent) {
+					y = ile.plateau.getX((MouseEvent) event);
+					x = ile.plateau.getY((MouseEvent) event);
+					System.out.println("bateau: " + x + " " + y + ", clique: " + x + " " + y);
+				}
+			} while (event == null);
+			if (ile.getObjet(x, y).estTraversable && (this.x == x + 1 && this.y == y) ^ (this.x == x - 1 && this.y == y)
+					^ (this.x == x && this.y == y + 1) ^ (this.x == x && this.y == y - 1)) {
+				perso.placer(x, y, perso, ile);
+				removePerso(perso);
+				arret = true;
 			}
-
-		} while (!stop);
-		removePerso(pers);
+		} while (!arret);
 	}
 
 	/**
@@ -90,9 +75,9 @@ public class Navire extends Parcelle {
 	}
 
 	public String toString() {
-		String s = "Le navire contient : ";
+		String s = "Le navire contient : \n\t";
 		for (Personnage p : persos)
-			s = s + p + "\n";
+			s = s + p + "\n\t";
 		return s;
 	}
 }

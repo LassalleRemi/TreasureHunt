@@ -11,7 +11,7 @@ public class SuperPlateau {
 	Plateau jeu;
 
 	public SuperPlateau(String[] gifs, int i) {
-		jeu = new Plateau(gifs, i);
+		jeu = new Plateau(gifs, i, true);
 	}
 
 	public void affichage() {
@@ -36,6 +36,10 @@ public class SuperPlateau {
 	
 	public InputEvent waitEvent(int timeout){
 		return jeu.waitEvent(timeout);
+	}
+	
+	public void println(String message){
+		jeu.println(message);
 	}
 
 }
