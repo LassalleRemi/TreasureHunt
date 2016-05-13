@@ -1,9 +1,6 @@
+package fr.lille.iutinfo.terrain;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
-
-import javax.swing.JFrame;
-
-import java.awt.event.KeyEvent;
 
 import tps.*;
 
@@ -11,7 +8,7 @@ public class SuperPlateau {
 	Plateau jeu;
 
 	public SuperPlateau(String[] gifs, int i) {
-		jeu = new Plateau(gifs, i, true);
+		jeu = new Plateau(gifs, i);
 	}
 
 	public void affichage() {
@@ -26,11 +23,11 @@ public class SuperPlateau {
 		return jeu.getJeu();
 	}
 
-	int getX(MouseEvent event) {
+	public int getX(MouseEvent event) {
 		return jeu.getX(event);
 	}
 	
-	int getY(MouseEvent event) {
+	public int getY(MouseEvent event) {
 		return jeu.getY(event);
 	}
 	
@@ -40,6 +37,14 @@ public class SuperPlateau {
 	
 	public void println(String message){
 		jeu.println(message);
+	}
+	
+	public void afficherInfo(String texte){
+		jeu.afficherInfo(texte);
+	}
+	
+	public void cacherInfo(){
+		jeu.cacherInfo();
 	}
 
 }
